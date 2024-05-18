@@ -1,9 +1,5 @@
 # Worlde
 
-## Author
-Alexis Demetriou  
-Email: ADemetriou5@uclan.ac.uk
-
 ## Description
 The Wordle.py program demonstrates the Wordle game in 2 modes: autoplay and interactive-play mode. Wordle is a word-based game created by Josh Wardle. The game experienced viral growth in late 2021, with over 2 million players a week after January 2022. The game was later acquired by the New York Times.
 
@@ -21,10 +17,9 @@ The Wordle.py program demonstrates the Wordle game in 2 modes: autoplay and inte
 - `get_words_from_file`: Reads words from a text file.
 - `bucket_sort_desc`: Sorts characters in descending order of frequency.
 - `print_frequencies`: Prints the frequencies of each letter in a word list.
-- `find_top_chars`: Finds the top 5 most frequent characters in a word list.
 - `find_words_with_letters`: Finds words containing specified letters.
 - `check`: Checks a guessed word against the secret word.
-- `find_word`: Finds a suitable word based on given constraints.
+- `find_matched_words`: Finds a suitable word based on given constraints.
 - `validate`: Validates a user's guess.
 - `get_user_guess`: Gets a guess from the user and validates it.
 - `wordle_demo`: Demonstrates various Wordle game functions.
