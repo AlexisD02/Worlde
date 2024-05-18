@@ -38,10 +38,20 @@ class FileHandler:
         Reads words from the file and returns them as a list.
         :return: a list containing the words read from the file
         """
-        # Open the file in read mode
-        with open(self.file_with_words_path, 'r') as file:
-            # Read each line in the file, remove leading and trailing whitespace and store the word
-            self.words_list = [line.strip() for line in file]
+        try:
+            # Open the file in read mode
+            with open(self.file_with_words_path, 'r') as file:
+                # Read each line in the file, remove leading and trailing whitespace and store the word
+                self.words_list = [line.strip() for line in file]
+        except FileNotFoundError:
+            print("Error: The file " + self.file_with_words_path + " was not found.")
+            quit()
+        except PermissionError:
+            print("Error: Permission denied to read the file " + self.file_with_words_path + ".")
+            quit()
+        except Exception as e:
+            print("An unexpected error occurred while reading the file: " + str(e))
+            quit()
 
         return self.words_list
 
@@ -433,9 +443,12 @@ if __name__ == '__main__':  # main program
     file_handler = FileHandler(file_path, words_list)
     words_list = file_handler.get_words_from_file()
 
-    main_game = WordleGame(words_list)
-    sorter = FrequencySorter(words_list)
-    validator = WordValidator(words_list, word_length)
-    wordle_demo = WordleDemo(words_list)
+    if not words_list:
+        print("The word list is empty. Please check the file and try again.")
+    else:
+        main_game = WordleGame(words_list)
+        sorter = FrequencySorter(words_list)
+        validator = WordValidator(words_list, word_length)
+        wordle_demo = WordleDemo(words_list)
 
-    main_game.main_game()
+        main_game.main_game()
