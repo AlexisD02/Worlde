@@ -16,11 +16,15 @@
 # https://www.geeksforgeeks.org/python-frequency-of-each-character-in-string/and
 # The definition of the function find_words_with_letters is reused from the website:
 # https://stackoverflow.com/questions/5227524/use-function-to-return-a-list-of-words-containing-required-letters
+# Abstract Classes in Python concept reused from the website:
+# https://www.geeksforgeeks.org/abstract-classes-in-python/
 # The nested-if structure is adapted from the lecture slides week 1, slide 61.
+
 
 from random import choice
 from time import sleep
 from typing import Optional, Union, List
+from abc import ABC, abstractmethod
 
 
 class FileHandler:
@@ -275,89 +279,24 @@ class WordValidator:
         return guess_input, incorrect  # return the guess input to the main program
 
 
-class WordleDemo:
+class GameMode(ABC):
     def __init__(self, words_list: [list]):
-        """
-        Initialize the WordleDemo object.
-        :param words_list: A list of words to be used in the wordle demonstration.
-        """
         self.words_list = words_list
 
-    def wordle_demo(self):
-        """
-        Demonstrates various wordle-related functions.
-        - Sorts and prints the frequencies of each letter in the words list.
-        - Finds words containing specified letters.
-        - Checks word compatibility.
-        - Finds matched words based on constraints.
-        """
-        sorter.sort_frequencies("print")
-        print()
-        print(find_words_with_letters(['and', 'din', 'aid', 'dan'], ['a', 'd', 'n']))
-        print(find_words_with_letters(self.words_list, ['s', 'e', 'a', 'o', 'r']))
-        print()
-        print(check('level', 'sofas'))
-        print(check('store', 'crazy'))
-        print(check('crane', 'raise'))
-        print()
-        print(find_matched_words(['batch', 'ozone'], ['a', 'b', 'c', 'd'], {'n': {2}, 'z': {2, 3}}, {'o': {0, 2}, 'e': {4}}, "word"))
-        print(find_matched_words(self.words_list, ['i', 'o', 'u', 'l', 'd', 'w', 't'], {'s': {1, 2}, 'p': {3}}, {'s': {0}, 'a': {2}}, "word"))
-        print(find_matched_words(self.words_list, ['m'], {'p': {2, 3}, 'd': {0}}, {'a': {1, 4}}, "word"))
-        print(find_matched_words(self.words_list, ['a', 'e', 'i', 'o', 'u', 'y', 'r', 'w', 't'], {}, {}, "word"))
-        print()
+    @abstractmethod
+    def execute(self, wordle_game: 'WordleGame', random_word: [str]):
+        pass
 
 
-class WordleGame:
-    def __init__(self, words_list: [list]):
-        """
-        Initialize the WordleGame object.
-        :param words_list: A list of words for the game.
-        """
-        self.words_list = words_list
-
-    def main_game(self):
-        """
-        Start the main Wordle game loop.
-        """
-        print("*** Welcome to the text-based Wordle game. ***\n")
-        print("I have guessed a secret word. Can you find it?")
-
-        while True:
-            random_word = choice(self.words_list)  # choose a secret word from the text file "wordles.txt"
-
-            while True:
-                # the while loop will run continuously until the user enters the correct wordle or types the letter "quit"
-                # in the input terminal.
-                print("Type:\n\"1\" for auto game,\n"
-                      "\"2\" for interactive game,\n"
-                      "\"3\" for wordle functions demonstration or\n"
-                      "\"Quit\" or \"q\" to exit")
-                start_input = input('Enter your choice: ').lower()
-                if start_input in ["quit", "q"]:  # if the input is 'quit'
-                    print("Bye!")
-                    quit()
-                elif start_input == '1':  # if the input is '1'
-                    print("Worldle running in autoplay mode!")
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                    self.autoplay_game(random_word)
-                    break
-                elif start_input == '2':  # if the input is '2'
-                    print("Challenge accepted! Can you guess the Secret Word?    [type \"quit\" or \"q\" to Quit]")
-                    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                    self.interactive_game(random_word)
-                    break
-                elif start_input == '3':  # if the input is '3'
-                    print("~~~~~~~~~~~~~~~~~~~~")
-                    wordle_demo.wordle_demo()
-                    break
-                else:  # else print error message
-                    print("Invalid input")
-
-    def autoplay_game(self, random_word: [str]):
+class AutoplayMode(GameMode):
+    def execute(self, wordle_game: 'WordleGame', random_word: [str]):
         """
         Start the Wordle game in autoplay mode.
+        :param wordle_game: An instance of the WordleGame class to manage game state and provide feedback.
         :param random_word: The secret word chosen for the game.
         """
+        print("Worldle running in autoplay mode!")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         num_of_guesses = 0
         all_words = self.words_list
         s_words = find_words_with_letters(self.words_list, sorter.sort_frequencies("returntopfive"))
@@ -411,12 +350,16 @@ class WordleGame:
             # computer chooses a random world from the list
             random_cpu_choice = choice(all_words)
 
-    @staticmethod
-    def interactive_game(random_word: [str]):
+
+class InteractiveMode(GameMode):
+    def execute(self, wordle_game: 'WordleGame', random_word: [str]):
         """
         Start the Wordle game in interactive mode.
+        :param wordle_game: An instance of the WordleGame class to manage game state and provide feedback.
         :param random_word: The secret word chosen for the game.
         """
+        print("Challenge accepted! Can you guess the Secret Word?    [type \"quit\" or \"q\" to Quit]")
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         num_of_guesses = 0
 
         while True:
@@ -435,6 +378,76 @@ class WordleGame:
                 break
 
 
+class DemonstrationMode(GameMode):
+    def execute(self, wordle_game: 'WordleGame', random_word: [str]):
+        """
+        Demonstrates various wordle-related functions.
+        - Sorts and prints the frequencies of each letter in the words list.
+        - Finds words containing specified letters.
+        - Checks word compatibility.
+        - Finds matched words based on constraints.
+        :param wordle_game: An instance of the WordleGame class to manage game state and provide feedback.
+        :param random_word: The secret word chosen for demonstration purposes.
+        """
+        print("~~~~~~~~~~~~~~~~~~~~")
+        sorter.sort_frequencies("print")
+        print()
+        print(find_words_with_letters(['and', 'din', 'aid', 'dan'], ['a', 'd', 'n']))
+        print(find_words_with_letters(self.words_list, ['s', 'e', 'a', 'o', 'r']))
+        print()
+        print(check('level', 'sofas'))
+        print(check('store', 'crazy'))
+        print(check('crane', 'raise'))
+        print()
+        print(find_matched_words(['batch', 'ozone'], ['a', 'b', 'c', 'd'], {'n': {2}, 'z': {2, 3}}, {'o': {0, 2}, 'e': {4}}, "word"))
+        print(find_matched_words(self.words_list, ['i', 'o', 'u', 'l', 'd', 'w', 't'], {'s': {1, 2}, 'p': {3}}, {'s': {0}, 'a': {2}}, "word"))
+        print(find_matched_words(self.words_list, ['m'], {'p': {2, 3}, 'd': {0}}, {'a': {1, 4}}, "word"))
+        print(find_matched_words(self.words_list, ['a', 'e', 'i', 'o', 'u', 'y', 'r', 'w', 't'], {}, {}, "word"))
+        print()
+
+
+class WordleGame:
+    def __init__(self, words_list: [list]):
+        """
+        Initialize the WordleGame object.
+        :param words_list: A list of words for the game.
+        """
+        self.words_list = words_list
+        self.modes = {
+            '1': AutoplayMode(self.words_list),
+            '2': InteractiveMode(self.words_list),
+            '3': DemonstrationMode(self.words_list)
+        }
+
+    def main_game(self):
+        """
+        Start the main Wordle game loop.
+        """
+        print("*** Welcome to the text-based Wordle game. ***\n")
+        print("I have guessed a secret word. Can you find it?")
+
+        while True:
+            random_word = choice(self.words_list)  # choose a secret word from the text file "wordles.txt"
+
+            while True:
+                # the while loop will run continuously until the user enters the correct wordle or types the letter "quit"
+                # in the input terminal.
+                print("Type:\n\"1\" for auto game,\n"
+                      "\"2\" for interactive game,\n"
+                      "\"3\" for wordle functions demonstration or\n"
+                      "\"Quit\" or \"q\" to exit")
+                start_input = input('Enter your choice: ').lower()
+                if start_input in ["quit", "q"]:  # if the input is 'quit'
+                    print("Bye!")
+                    quit()
+                mode = self.modes.get(start_input)
+                if mode:
+                    mode.execute(self, random_word)
+                    break
+                else:
+                    print("Invalid input\n")
+
+
 if __name__ == '__main__':  # main program
     file_path = 'wordles.txt'  # Path to the text file
     words_list = []
@@ -449,6 +462,5 @@ if __name__ == '__main__':  # main program
         main_game = WordleGame(words_list)
         sorter = FrequencySorter(words_list)
         validator = WordValidator(words_list, word_length)
-        wordle_demo = WordleDemo(words_list)
 
         main_game.main_game()
